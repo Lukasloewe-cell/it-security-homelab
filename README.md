@@ -8,30 +8,7 @@ Das Lab bildet eine kleine, aber realistische Unternehmensinfrastruktur nach: ei
 
 ## Architektur
 
-```mermaid
-flowchart TD
-    Internet((Internet))
-    Fritzbox["Fritz!Box<br/>192.168.178.1/24<br/>Heimnetz"]
-    Proxmox["Proxmox VE (Typ-1-Hypervisor)<br/>192.168.178.42"]
-    OPN["OPNsense Firewall"]
-    LAN["LAN-Segment<br/>192.168.10.0/24"]
-    OPT1["OPT1-Segment<br/>192.168.20.0/24"]
-    Kali["Kali Linux<br/>Attacker<br/>192.168.20.10"]
-    Ubuntu["Ubuntu Server<br/>192.168.10.20<br/>Web + Mail"]
-    Win["Windows 11 Client<br/>192.168.10.11<br/>Thunderbird"]
-    Wazuh["Wazuh SIEM<br/>192.168.10.30"]
-
-    Internet --- Fritzbox
-    Fritzbox --- Proxmox
-    Proxmox --- OPN
-    OPN -->|"WAN: 192.168.178.38/24"| Fritzbox
-    OPN -->|"LAN: 192.168.10.1/24"| LAN
-    OPN -->|"OPT1: 192.168.20.1/24"| OPT1
-    LAN --- Ubuntu
-    LAN --- Win
-    LAN --- Wazuh
-    OPT1 --- Kali
-```
+![Screenshot](Aufbau.png)
 
 **Kernprinzip der Segmentierung:** Kali sitzt in einem eigenen Netz (OPT1), alle Ziel-Systeme im LAN. Da beide Segmente in unterschiedlichen Subnetzen liegen, muss jeder Angriff zwangsläufig durch OPNsense geroutet werden — jeder Zugriff ist damit filterbar und protokollierbar.
 
