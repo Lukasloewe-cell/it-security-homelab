@@ -1,6 +1,3 @@
-# it-security-homelab
-
-
 # IT-Security Homelab
 
 Ein isoliertes, segmentiertes Homelab zum praktischen Üben von Penetration Testing, Angriffserkennung (IDS/SIEM) und Netzwerksicherheit — aufgebaut auf eigener Hardware mit Proxmox als Hypervisor.
