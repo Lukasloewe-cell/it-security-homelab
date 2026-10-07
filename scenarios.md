@@ -114,7 +114,7 @@ Zeigen, wie häufige Admin-Fehler (zu weitreichende `sudo`-Rechte, unsichere Dat
 Vor jeder Ausnutzung steht die systematische Bestandsaufnahme mit niedrigen Rechten:
 
 ```bash
-find / -perm -4000 -type f 2>/dev/null   # SUID-Binaries auflisten
+find / -perm -4000 -type f 2>/dev/null    # SUID-Binaries auflisten
 sudo -l                                   # eigene Sudo-Rechte prüfen
 cat /etc/crontab; ls -la /etc/cron.d/     # Cronjobs auf Automatisierungsfehler prüfen
 ```
