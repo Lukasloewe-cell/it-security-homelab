@@ -100,3 +100,84 @@ Reconnaissance (nmap)
 | Schwaches Passwort-Hashing (MD5) | bcrypt, scrypt oder Argon2 mit Salt |
 | Unzureichende clientseitige Filter (Dropdown) | Validierung grundsätzlich serverseitig, nie nur im Frontend |
 | Command Injection | Keine Nutzereingaben an Shell-Befehle übergeben; wo unvermeidbar, strikte Allow-Lists statt Blacklist-Filterung, Escaping über Sprachfunktionen statt eigener Logik |
+
+# Kapitel 2: Privilege Escalation auf Ubuntu Server
+
+Nach dem initialen Zugriff über eine Webapp-Schwachstelle (siehe Kapitel 1) stand nur ein eingeschränkter Shell-Zugang zur Verfügung (`www-data`, Rechte eines Webserver-Prozesses). Dieses Kapitel dokumentiert drei typische Wege, von einem niedrig privilegierten Account zu Root-Rechten zu eskalieren — zwei davon bewusst nachgebaute, realistische Fehlkonfigurationen auf dem Ubuntu-Zielsystem.
+
+## Ziel
+
+Zeigen, wie häufige Admin-Fehler (zu weitreichende `sudo`-Rechte, unsichere Dateiberechtigungen bei automatisierten Skripten) zur vollständigen Kompromittierung eines Systems führen — und welche systematische Vorgehensweise (Enumeration) dorthin führt.
+
+## Vorgehen: Enumeration
+
+Vor jeder Ausnutzung steht die systematische Bestandsaufnahme mit niedrigen Rechten:
+
+```bash
+find / -perm -4000 -type f 2>/dev/null   # SUID-Binaries auflisten
+sudo -l                                   # eigene Sudo-Rechte prüfen
+cat /etc/crontab; ls -la /etc/cron.d/     # Cronjobs auf Automatisierungsfehler prüfen
+```
+
+**Ergebnis der SUID-Prüfung:** Nur Standard-Binaries (`passwd`, `su`, `mount`, `ping` etc.), keine ausnutzbare Lücke — ein valides, dokumentationswürdiges Negativergebnis.
+
+## Technik 1: Fehlkonfigurierte Sudo-Rechte (GTFOBins)
+
+**Simulierte Fehlkonfiguration:** Ein eingeschränkter Nutzer (`lowpriv`) durfte ohne Passwort das Tool `find` mit `sudo` ausführen:
+
+```
+lowpriv ALL=(ALL) NOPASSWD: /usr/bin/find
+```
+
+**Ausnutzung:** `find` bietet die Funktion `-exec`, um nach der Dateisuche beliebige weitere Befehle auszuführen. Diese Befehle erben die Rechte, mit denen `find` selbst läuft — hier also Root:
+
+```bash
+sudo find . -exec /bin/bash \;
+```
+
+Ergebnis: sofortige interaktive Root-Shell.
+
+**Kernprinzip:** Nicht `find` selbst ist gefährlich, sondern dass es Mechanismen besitzt, um beliebige weitere Programme zu starten. Diese Eigenschaft teilen sich hunderte gängige Unix-Tools (Editoren, Interpreter, Archiv-Programme) — dokumentiert in der [GTFOBins](https://gtfobins.github.io/)-Datenbank. Jede `sudo`-Freigabe eines Tools mit solchen Fähigkeiten ist faktisch eine Freigabe einer Root-Shell.
+
+## Technik 2: Unsichere Dateirechte bei einem Root-Cronjob
+
+**Simulierte Fehlkonfiguration:** Ein Cronjob führt minütlich als `root` ein Wartungsskript aus, das versehentlich für alle Nutzer beschreibbar ist:
+
+```
+# /etc/cron.d/backup-cleanup
+* * * * * root /opt/scripts/cleanup.sh
+```
+```bash
+sudo chmod 777 /opt/scripts/cleanup.sh
+```
+
+**Ausnutzung:** Da jeder Nutzer das Skript beschreiben kann, es aber mit Root-Rechten ausgeführt wird, reicht es, eigenen Code anzuhängen. Zwei Varianten wurden getestet:
+
+- *SUID-Kopie von Bash* — auf diesem (gehärteten) System wirkungslos, da moderne Bash-Builds das SUID-Bit für sich selbst ignorieren.
+- *Anlegen eines neuen Root-Nutzers* — zuverlässig erfolgreich:
+
+```bash
+useradd -o -u 0 -g root mia
+echo "mia:123456" | chpasswd
+```
+
+Da unter Linux nicht der Nutzername, sondern die UID über Rechte entscheidet, verschafft ein zweiter Nutzer mit UID 0 denselben Zugriff wie `root`, komplett ohne SUID-Trick.
+
+**Kernprinzip:** Automatisierung mit erhöhten Rechten ist nur so sicher wie die Dateiberechtigungen der ausgeführten Skripte selbst. `chmod 777` als schnelle Lösung für Berechtigungsprobleme ist einer der häufigsten real auftretenden Fehler in produktiven Systemen.
+
+## Gemeinsames Prinzip beider Techniken
+
+In beiden Fällen bekommt ein Prozess oder Nutzer mit eingeschränkten Rechten indirekt die Möglichkeit, Code mit **höheren Rechten als beabsichtigt** auszuführen — einmal durch zu großzügige Rechtevergabe (`sudo`), einmal durch zu laxe Dateiberechtigungen bei einem bereits privilegierten Automatisierungsprozess (Cronjob). Beides sind Verstöße gegen das **Least-Privilege-Prinzip**.
+
+## Mitigation
+
+| Fehler | Gegenmaßnahme |
+|---|---|
+| `sudo`-Freigabe mächtiger Tools (`find`, `vim`, `less`, `awk`, …) | Nur exakt benötigte, möglichst spezifische Skripte statt generischer Tools freigeben; Argumente in der sudoers-Regel einschränken |
+| Weltweit beschreibbare Skripte für Root-Cronjobs | Skripte nur für `root` beschreibbar machen (`chmod 700` o. ä.), niemals `777` als Standardlösung für Berechtigungsfehler nutzen |
+| Fehlende Kontrolle über vergebene Rechte | Regelmäßige Audits mit `sudo -l`, `find / -perm -4000`, `find / -perm -2 -type f` auf allen produktiven Systemen |
+
+## Tools für die systematische Suche
+
+In der Praxis werden diese Schritte meist mit automatisierten Enumeration-Skripten beschleunigt (z. B. **LinPEAS**, **LinEnum**), die genau nach diesen Mustern suchen. Für dieses Lab wurde bewusst manuell vorgegangen, um das zugrunde liegende Prinzip zu verstehen, bevor man sich auf Automatisierung verlässt.
+
