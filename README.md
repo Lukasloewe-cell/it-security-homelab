@@ -20,8 +20,8 @@ Das Lab bildet eine kleine, aber realistische Unternehmensinfrastruktur nach: ei
 | OPNsense | Firewall / Router zwischen Heimnetz, LAN und OPT1 | WAN 192.168.178.38 · LAN 192.168.10.1 · OPT1 192.168.20.1 | — |
 | Kali Linux | Angreifer-System | 192.168.20.10 | OPT1 |
 | Ubuntu Server | Webserver (nginx) + absichtlich verwundbare Webapps (DVWA, OWASP Juice Shop) + Mailserver (Postfix/Dovecot) | 192.168.10.20 | LAN |
-| Windows 11 | Client-System, simuliertes Phishing-Opfer mit Thunderbird | 192.168.10.11 | LAN |
-| Wazuh | SIEM / Log-Zentrale zur Angriffserkennung | 192.168.10.30 | LAN |
+| Windows 11 | Client-System, simuliertes Phishing-Opfer mit Thunderbird | 192.168.10.30 | LAN |
+| Wazuh | SIEM / Log-Zentrale zur Angriffserkennung | 192.168.10.10 | LAN |
 
 ## Netzwerksegmentierung
 
@@ -53,7 +53,7 @@ Drei Linux-Bridges auf dem Proxmox-Host bilden die physische Grundlage:
 - [x] Alle fünf VMs installiert und erreichbar
 - [x] Web- und Mailserver auf Ubuntu eingerichtet
 - [x] Wazuh-Agents ausgerollt
-- [ ] Erste dokumentierte Angriffsszenarien (Webapp-Exploits, Phishing-Simulation, Reverse Shell)
+- [x] Erste dokumentierte Angriffsszenarien (Webapp-Exploits, Phishing-Simulation, Reverse Shell)
 - [ ] Detection-Nachweise (Suricata-/Wazuh-Alerts zu den Angriffen)
 
 ## Nächste Schritte
