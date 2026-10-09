@@ -120,7 +120,7 @@ Die Sammlung lieferte 1 Domain, 2 Computer und 7 User als JSON-Dateien.
 
 Die gesammelten JSON-Dateien wurden anschließend über die BloodHound-Weboberfläche hochgeladen (Upload-Funktion im Hauptmenü).
 
-![Screenshot](sarah.png)
+![Screenshot](Sarah.png)
 
 ### Privilege-Eskalation sichtbar machen
 
