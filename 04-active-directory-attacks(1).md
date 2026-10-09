@@ -120,7 +120,7 @@ Die Sammlung lieferte 1 Domain, 2 Computer und 7 User als JSON-Dateien.
 
 Die gesammelten JSON-Dateien wurden anschließend über die BloodHound-Weboberfläche hochgeladen (Upload-Funktion im Hauptmenü).
 
-![BloodHound Node-Ansicht von svc.backup mit Gruppenmitgliedschaften](./screenshots/bloodhound-svc-backup-groups.png)
+![BloodHound Node-Ansicht von svc.backup mit Gruppenmitgliedschaften](Member_svcBackup.png)
 
 ### Privilege-Eskalation sichtbar machen
 
@@ -137,7 +137,7 @@ Add-ADGroupMember -Identity "Backup Operators" -Members "svc.backup"
 
 Nach erneutem Sammeln (`bloodhound-python`) und erneutem Upload zeigte der Graph beide neuen Gruppenmitgliedschaften von `svc.backup`.
 
-![BloodHound Gesamtgraph nach Privilege-Eskalation](./screenshots/bloodhound-overview-graph.png)
+![BloodHound Gesamtgraph nach Privilege-Eskalation](Sarah.png)
 
 **Wichtiger methodischer Lerneffekt:** Die direkte Pathfinding-Abfrage von `svc.backup` zu `Domain Admins` zeigte trotzdem **"Path not found"**. BloodHound modelliert ausschließlich AD-Berechtigungsbeziehungen (z.B. `GenericAll`, `WriteDACL`, `ForceChangePassword`, Gruppenmitgliedschaften) als Kanten im Graphen. Der Backup-Operators-Angriffsweg über `NTDS.dit` ist dagegen ein Rechte-Missbrauch auf Dateisystemebene (vergleichbar mit einem DCSync-Angriff) und wird von BloodHound nicht automatisch als Pfad dargestellt, obwohl er in der Praxis genauso zu vollständiger Domain-Kompromittierung führt. BloodHound ist ein sehr mächtiges Werkzeug, ersetzt aber nicht das Verständnis, welche Windows-Rechte faktisch was ermöglichen.
 
