@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Homenet Graph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/layout-base/2.0.1/layout-base.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cose-base/2.2.0/cose-base.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape-fcose/2.2.0/cytoscape-fcose.js"></script>
+<style>
+  :root {
+    --bg: #05070b;
+    --bg2: #0a0e16;
+    --panel: #0d1220;
+    --panel2: #10172a;
+    --border: #1c2638;
+    --border-soft: #161e2e;
+    --text: #d7e1ee;
+    --muted: #64748b;
+    --muted2: #46566e;
+    --accent: #37f2c8;
+    --accent2: #8a6fff;
+    --host: #4fa6ff;
+    --ext: #c678ff;
+    --sev-low: #38d996;
+    --sev-mid: #f0b429;
+    --sev-high: #ff5a6e;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text);
+    font-family: 'JetBrains Mono', monospace; overflow: hidden; }
+
+  body {
+    background:
+      radial-gradient(circle at 15% 10%, rgba(55,242,200,0.05), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(138,111,255,0.06), transparent 45%),
+      linear-gradient(var(--bg), var(--bg));
+    background-attachment: fixed;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  #topbar {
+    position: absolute; top: 0; left: 0; right: 0; height: 56px;
+    display: flex; align-items: center; gap: 14px; padding: 0 20px;
+    background: rgba(13,18,32,0.78); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border); z-index: 30;
+  }
+  #topbar .title {
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; letter-spacing: 1.5px;
+    font-size: 15px; display: flex; align-items: center; gap: 9px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .livedot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+    box-shadow: 0 0 0 0 rgba(55,242,200,0.6); animation: pulse 2s infinite; flex: none; }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(55,242,200,0.55); }
+    70% { box-shadow: 0 0 0 7px rgba(55,242,200,0); }
+    100% { box-shadow: 0 0 0 0 rgba(55,242,200,0); }
+  }
+  #topbar select, #topbar button {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    padding: 7px 12px; border-radius: 7px; font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    cursor: pointer; transition: border-color .15s, background .15s, transform .1s;
+  }
+  #topbar select:hover, #topbar button:hover { border-color: var(--accent); background: #131b30; }
+  #topbar button:active { transform: scale(0.96); }
+  #topbar button.primary { background: linear-gradient(135deg, rgba(55,242,200,0.18), rgba(138,111,255,0.15)); border-color: #2e5a52; }
+  #stats {
+    margin-left: auto; display: flex; gap: 16px; font-size: 11px; color: var(--muted);
+  }
+  #stats b { color: var(--text); font-weight: 600; }
+  #loading-pill {
+    font-size: 11px; color: var(--accent); display: none; align-items: center; gap: 6px;
+  }
+  #loading-pill.active { display: flex; }
+  .spinner { width: 11px; height: 11px; border-radius: 50%; border: 2px solid rgba(55,242,200,0.25);
+    border-top-color: var(--accent); animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #cy { position: absolute; top: 56px; left: 268px; right: 332px; bottom: 0; z-index: 2; }
+
+  /* ---------- left filter panel ---------- */
+  #filterpanel {
+    position: absolute; top: 56px; left: 0; bottom: 0; width: 268px;
+    background: rgba(13,18,32,0.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-right: 1px solid var(--border); padding: 18px 16px; overflow-y: auto; z-index: 20;
+  }
+  .fp-section { margin-bottom: 20px; }
+  .fp-section h3 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 10.5px; letter-spacing: 1.4px;
+    text-transform: uppercase; color: var(--muted2); margin: 0 0 10px; font-weight: 600;
+  }
+  #search {
+    width: 100%; background: #0b1120; border: 1px solid var(--border); color: var(--text);
+    padding: 9px 11px; border-radius: 7px; font-family: inherit; font-size: 12px;
+  }
+  #search:focus { outline: none; border-color: var(--accent); }
+  .fp-row {
+    display: flex; align-items: center; gap: 9px; padding: 6px 0; font-size: 12px;
+    cursor: pointer; user-select: none; color: var(--text);
+  }
+  .fp-row:hover { color: #fff; }
+  .fp-row input { accent-color: var(--accent); width: 13px; height: 13px; cursor: pointer; }
+  .fp-row .swatch { width: 9px; height: 9px; border-radius: 3px; flex: none; }
+  .fp-row .cnt {
+    margin-left: auto; color: var(--muted); font-size: 10.5px; background: #0b1120;
+    border: 1px solid var(--border-soft); padding: 1px 6px; border-radius: 10px;
+  }
+  .toggle-row { display: flex; align-items: center; gap: 9px; padding: 6px 0; font-size: 12px; cursor: pointer; }
+  .toggle-row input { accent-color: var(--accent2); }
+  #filterpanel .actions { display: flex; flex-direction: column; gap: 8px; }
+  #filterpanel .actions button {
+    background: var(--panel2); color: var(--text); border: 1px solid var(--border);
+    padding: 8px 10px; border-radius: 7px; font-family: inherit; font-size: 11.5px; cursor: pointer;
+    text-align: left; transition: border-color .15s, background .15s;
+  }
+  #filterpanel .actions button:hover { border-color: var(--accent2); background: #131b30; }
+
+  /* ---------- right details sidebar ---------- */
+  #sidebar {
+    position: absolute; top: 56px; right: 0; bottom: 0; width: 332px;
+    background: rgba(13,18,32,0.72); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-left: 1px solid var(--border); padding: 18px; overflow-y: auto; font-size: 12.5px; z-index: 20;
+  }
+  #sidebar h2 {
+    font-family: 'Space Grotesk', sans-serif; font-size: 12px; color: var(--accent);
+    margin: 0 0 14px; letter-spacing: 1px; text-transform: uppercase; font-weight: 600;
+  }
+  .detail-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .detail-icon {
+    width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; font-size: 17px; flex: none;
+    background: linear-gradient(135deg, rgba(79,166,255,0.18), rgba(79,166,255,0.05));
+    border: 1px solid rgba(79,166,255,0.3);
+  }
+  .detail-title { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 13.5px;
+    color: #fff; word-break: break-all; line-height: 1.3; }
+  .detail-sub { font-size: 10.5px; color: var(--muted); margin-top: 2px; letter-spacing: .5px; text-transform: uppercase; }
+
+  .row { display: flex; justify-content: space-between; padding: 7px 0;
+    border-bottom: 1px solid var(--border-soft); gap: 12px; }
+  .row .k { color: var(--muted); font-size: 11px; flex: none; }
+  .row .v { text-align: right; word-break: break-all; color: var(--text); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; justify-content: flex-end; }
+  .chip { background: #0b1120; border: 1px solid var(--border-soft); border-radius: 12px;
+    padding: 2px 8px; font-size: 10.5px; color: var(--text); }
+  .chip.warn { border-color: rgba(255,90,110,0.45); color: #ff8d9a; background: rgba(255,90,110,0.08); }
+
+  .otx-warning {
+    margin-top: 10px; background: rgba(240,180,41,0.08); border: 1px solid rgba(240,180,41,0.3);
+    border-radius: 8px; padding: 10px 11px; font-size: 11px; line-height: 1.55; color: #f0c766;
+  }
+
+  .member-list { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; }
+  .member-item { background: #0b1120; border: 1px solid var(--border-soft); border-radius: 7px;
+    padding: 7px 9px; font-size: 10.5px; color: var(--muted); display: flex; justify-content: space-between; }
+  .member-item b { color: var(--text); font-weight: 500; }
+
+  #empty-hint { color: var(--muted); line-height: 1.7; font-size: 12px; }
+  #empty-hint .hint-key { color: var(--accent); }
+
+  .copy-btn {
+    background: none; border: 1px solid var(--border-soft); color: var(--muted);
+    font-size: 9.5px; padding: 1px 6px; border-radius: 5px; cursor: pointer; margin-left: 6px;
+  }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ---------- legend ---------- */
+  #legend {
+    position: absolute; bottom: 16px; left: 284px; z-index: 15;
+    background: rgba(13,18,32,0.85); backdrop-filter: blur(10px); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 12px 15px; font-size: 11px; transition: opacity .2s;
+  }
+  #legend.collapsed .legend-body { display: none; }
+  #legend .legend-head { display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; gap: 20px; font-family: 'Space Grotesk', sans-serif; font-size: 10.5px;
+    letter-spacing: 1px; text-transform: uppercase; color: var(--muted2); font-weight: 600; }
+  #legend .legend-body { margin-top: 9px; }
+  #legend .legend-body div { display: flex; align-items: center; gap: 8px; margin: 4px 0; color: var(--text); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+  .diamond { width: 8px; height: 8px; transform: rotate(45deg); display: inline-block; flex: none; }
+  .hexagon { width: 9px; height: 9px; display: inline-block; flex: none;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+  .dash-sample { width: 16px; border-top: 2px dashed var(--muted); display: inline-block; }
+
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-thumb { background: #1c2638; border-radius: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+
+  #toast {
+    position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%) translateY(0);
+    background: var(--panel2); border: 1px solid var(--accent); color: var(--text);
+    padding: 9px 16px; border-radius: 8px; font-size: 11.5px; z-index: 50; opacity: 0;
+    pointer-events: none; transition: opacity .25s, transform .25s;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <span class="title"><span class="livedot"></span>◈ HOMENET GRAPH</span>
+  <select id="hours">
+    <option value="1">Letzte 1h</option>
+    <option value="24" selected>Letzte 24h</option>
+    <option value="168">Letzte 7 Tage</option>
+  </select>
+  <button id="refresh" class="primary">↻ Aktualisieren</button>
+  <span id="loading-pill"><span class="spinner"></span> lädt …</span>
+  <div id="stats"></div>
+</div>
+
+<div id="filterpanel">
+  <div class="fp-section">
+    <h3>Suche</h3>
+    <input id="search" type="text" placeholder="IP, Host, Alert-Name …">
+  </div>
+
+  <div class="fp-section">
+    <h3>Sichtbar</h3>
+    <label class="fp-row"><input type="checkbox" class="flt" data-k="host" checked><span class="swatch" style="background:var(--host)"></span>Hosts<span class="cnt" id="cnt-host">0</span></label>
+    <label class="fp-row"><input type="checkbox" class="flt" data-k="sev-low" checked><span class="swatch" style="background:var(--sev-low)"></span>Alert · niedrig<span class="cnt" id="cnt-sev-low">0</span></label>
+    <label class="fp-row"><input type="checkbox" class="flt" data-k="sev-mid" checked><span class="swatch" style="background:var(--sev-mid)"></span>Alert · mittel<span class="cnt" id="cnt-sev-mid">0</span></label>
+    <label class="fp-row"><input type="checkbox" class="flt" data-k="sev-high" checked><span class="swatch" style="background:var(--sev-high)"></span>Alert · hoch<span class="cnt" id="cnt-sev-high">0</span></label>
+    <label class="fp-row"><input type="checkbox" class="flt" data-k="ext-none" checked><span class="swatch" style="background:#8a6fd4"></span>Ext. IP · unbekannt<span class="cnt" id="cnt-ext-none">0</span></label>
+    <label class="fp-row"><input type="checkbox" class="flt" data-k="ext-mid" checked><span class="swatch" style="background:#e0a93e"></span>Ext. IP · OTX auffällig<span class="cnt" id="cnt-ext-mid">0</span></label>
+    <label class="fp-row"><input type="checkbox" class="flt" data-k="ext-high" checked><span class="swatch" style="background:#e05a4e"></span>Ext. IP · hohes Risiko<span class="cnt" id="cnt-ext-high">0</span></label>
+  </div>
+
+  <div class="fp-section">
+    <h3>Darstellung</h3>
+    <label class="toggle-row"><input type="checkbox" id="toggleGroup" checked>Gleichartige Alerts gruppieren</label>
+    <label class="toggle-row"><input type="checkbox" id="toggleLabels">Alle Labels dauerhaft zeigen</label>
+  </div>
+
+  <div class="fp-section actions">
+    <h3>Aktionen</h3>
+    <button id="btnFit">⤢ Ansicht einpassen</button>
+    <button id="btnRelayout">↻ Neu anordnen</button>
+    <button id="btnPng">⇩ Als PNG exportieren</button>
+    <button id="btnClearFocus">✕ Fokus zurücksetzen</button>
+  </div>
+</div>
+
+<div id="cy"></div>
+
+<div id="legend">
+  <div class="legend-head" id="legend-toggle"><span>Legende</span><span id="legend-caret">▾</span></div>
+  <div class="legend-body">
+    <div><span class="dot" style="background:var(--host)"></span> Host</div>
+    <div><span class="diamond" style="background:var(--sev-low)"></span> Alert (niedrig)</div>
+    <div><span class="diamond" style="background:var(--sev-mid)"></span> Alert (mittel)</div>
+    <div><span class="diamond" style="background:var(--sev-high)"></span> Alert (hoch)</div>
+    <div><span class="hexagon" style="background:#8a6fd4"></span> Externe IP (unbekannt)</div>
+    <div><span class="hexagon" style="background:#e0a93e"></span> Externe IP (OTX: auffällig)</div>
+    <div><span class="hexagon" style="background:#e05a4e"></span> Externe IP (OTX: hohes Risiko)</div>
+    <div><span class="dash-sample"></span> OPNsense-Traffic</div>
+  </div>
+</div>
+
+<div id="sidebar">
+  <h2>Details</h2>
+  <div id="details">
+    <p id="empty-hint">Klick auf einen Knoten für Details.<br>Ein Klick auf einen <span class="hint-key">Host</span> hebt seine direkte Umgebung hervor, alles andere wird gedimmt — Klick ins Leere setzt zurück.</p>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// cytoscape-fcose registriert sich bei reinem <script>-Tag-Einsatz automatisch
+// selbst am globalen cytoscape-Objekt -- kein manuelles cytoscape.use(...) noetig
+// (und auch keine globale Variable "cytoscapeFcose", die man uebergeben koennte).
+
+const API_BASE = window.API_BASE || "http://localhost:8000";
+
+/* ---------------- helpers ---------------- */
+
+function severityBucket(sev) {
+  if (sev === null || sev === undefined) return 'low';
+  if (sev >= 12) return 'high';
+  if (sev >= 7) return 'mid';
+  return 'low';
+}
+function severityColor(sev) {
+  const b = severityBucket(sev);
+  return b === 'high' ? '#ff5a6e' : b === 'mid' ? '#f0b429' : '#38d996';
+}
+function extBucket(pulseCount) {
+  if (pulseCount === null || pulseCount === undefined || pulseCount === 0) return 'none';
+  if (pulseCount >= 5) return 'high';
+  return 'mid';
+}
+function reputationColor(pulseCount) {
+  const b = extBucket(pulseCount);
+  return b === 'high' ? '#e05a4e' : b === 'mid' ? '#e0a93e' : '#8a6fd4';
+}
+function relTime(iso) {
+  if (!iso) return '–';
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  const diffMs = Date.now() - d.getTime();
+  const min = Math.round(diffMs / 60000);
+  if (min < 1) return 'gerade eben';
+  if (min < 60) return `vor ${min} Min`;
+  const h = Math.round(min / 60);
+  if (h < 24) return `vor ${h} Std`;
+  const days = Math.round(h / 24);
+  return `vor ${days} Tg`;
+}
+function hashKey(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._timer);
+  showToast._timer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+/* ---------------- grouping ---------------- */
+
+function buildElements(raw, grouped) {
+  if (!grouped) {
+    return {
+      nodes: raw.nodes.map(n => ({ data: { ...n.data, classKind: classForNode(n.data) } })),
+      edges: raw.edges.map(e => ({ data: { ...e.data } })),
+    };
+  }
+
+  const alertToHost = {};
+  raw.edges.forEach(e => { if (e.data.kind === 'triggered') alertToHost[e.data.target] = e.data.source; });
+
+  const groups = {};
+  raw.nodes.forEach(n => {
+    if (n.data.kind !== 'alert') return;
+    const hostId = alertToHost[n.data.id] || 'unknown';
+    const key = `${hostId}|${n.data.label}|${n.data.severity}`;
+    if (!groups[key]) groups[key] = { key, hostId, label: n.data.label, severity: n.data.severity, members: [] };
+    groups[key].members.push(n.data);
+  });
+
+  const outNodes = [];
+  raw.nodes.forEach(n => {
+    if (n.data.kind === 'host' || n.data.kind === 'external_ip') {
+      outNodes.push({ data: { ...n.data, classKind: classForNode(n.data) } });
+    }
+  });
+
+  const alertIdToGroupId = {};
+  Object.values(groups).forEach(g => {
+    const groupId = 'group:' + hashKey(g.key);
+    g.members.forEach(m => alertIdToGroupId[m.id] = groupId);
+    const latest = g.members.map(m => m.timestamp).filter(Boolean).sort().slice(-1)[0];
+    outNodes.push({
+      data: {
+        id: groupId, kind: 'alert',
+        label: g.members.length > 1 ? `${g.label} (×${g.members.length})` : g.label,
+        severity: g.severity, count: g.members.length, members: g.members, timestamp: latest,
+        classKind: classForNode({ kind: 'alert', severity: g.severity }),
+      }
+    });
+  });
+
+  const outEdges = [];
+  const seen = new Set();
+  raw.edges.forEach(e => {
+    let source = e.data.source, target = e.data.target;
+    if (e.data.kind === 'triggered') target = alertIdToGroupId[target] || target;
+    if (e.data.kind === 'involves') source = alertIdToGroupId[source] || source;
+    const id = `${source}->${target}:${e.data.kind}`;
+    if (seen.has(id)) return;
+    seen.add(id);
+    outEdges.push({ data: { ...e.data, id, source, target } });
+  });
+
+  return { nodes: outNodes, edges: outEdges };
+}
+
+function classForNode(d) {
+  if (d.kind === 'host') return 'host';
+  if (d.kind === 'alert') return 'sev-' + severityBucket(d.severity);
+  if (d.kind === 'external_ip') return 'ext-' + extBucket(d.pulse_count);
+  return '';
+}
+
+/* ---------------- cytoscape setup ---------------- */
+
+const cy = cytoscape({
+  container: document.getElementById('cy'),
+  minZoom: 0.08, maxZoom: 4,
+  style: [
+    { selector: 'node', style: { 'label': '', 'font-family': 'JetBrains Mono, monospace',
+      'transition-property': 'opacity, background-color, border-width', 'transition-duration': '150ms' } },
+    { selector: 'node[kind = "host"]', style: {
+        'background-color': '#4fa6ff', 'label': 'data(label)', 'color': '#d7e1ee',
+        'font-size': '10.5px', 'font-weight': 600, 'text-valign': 'bottom', 'text-margin-y': 7,
+        'width': 36, 'height': 36, 'border-width': 2.5, 'border-color': '#8fcaff',
+        'text-background-color': '#05070b', 'text-background-opacity': 0.75, 'text-background-padding': '2px',
+      } },
+    { selector: 'node[kind = "alert"]', style: {
+        'background-color': (n) => severityColor(n.data('severity')),
+        'color': '#d7e1ee', 'font-size': '9.5px', 'text-valign': 'bottom', 'text-margin-y': 6,
+        'width': (n) => 14 + Math.min(16, Math.sqrt(n.data('count') || 1) * 6),
+        'height': (n) => 14 + Math.min(16, Math.sqrt(n.data('count') || 1) * 6),
+        'shape': 'diamond', 'border-width': 1, 'border-color': 'rgba(255,255,255,0.25)',
+        'text-background-color': '#05070b', 'text-background-opacity': 0.75, 'text-background-padding': '2px',
+      } },
+    { selector: 'node[kind = "external_ip"]', style: {
+        'background-color': (n) => reputationColor(n.data('pulse_count')),
+        'color': '#d7e1ee', 'font-size': '9.5px', 'text-valign': 'bottom', 'text-margin-y': 6,
+        'width': 26, 'height': 26, 'shape': 'hexagon', 'border-width': 1.5, 'border-color': 'rgba(255,255,255,0.25)',
+        'text-background-color': '#05070b', 'text-background-opacity': 0.75, 'text-background-padding': '2px',
+      } },
+    { selector: 'node.hover-label, node.always-label, node.search-match', style: { 'label': 'data(label)' } },
+    { selector: 'node.focus', style: { 'label': 'data(label)', 'border-width': 3, 'border-color': '#37f2c8' } },
+    { selector: 'node:selected', style: { 'border-width': 3, 'border-color': '#37f2c8', 'label': 'data(label)' } },
+    { selector: 'node.dim', style: { 'opacity': 0.08 } },
+    { selector: 'node.search-dim', style: { 'opacity': 0.1 } },
+
+    { selector: 'edge', style: {
+        'width': 1.3, 'line-color': '#273448', 'target-arrow-color': '#273448',
+        'target-arrow-shape': 'triangle', 'curve-style': 'bezier', 'arrow-scale': 0.75,
+        'opacity': 0.85, 'transition-property': 'opacity', 'transition-duration': '150ms',
+      } },
+    { selector: 'edge[kind = "triggered"]', style: { 'line-color': (e) => severityColor(e.target().data('severity')),
+        'target-arrow-color': (e) => severityColor(e.target().data('severity')), 'opacity': 0.55, 'width': 1 } },
+    { selector: 'edge[kind = "involves"]', style: { 'line-color': '#7a5fd6', 'target-arrow-color': '#7a5fd6',
+        'line-style': 'dotted', 'width': 1, 'opacity': 0.5 } },
+    { selector: 'edge[kind = "communicated_with"]', style: {
+        'line-color': '#45566e', 'target-arrow-color': '#45566e', 'line-style': 'dashed',
+        'width': (e) => Math.min(4, 1 + Math.log2((e.data('count') || 1) + 1) * 0.6),
+      } },
+    { selector: 'edge.dim', style: { 'opacity': 0.03 } },
+    { selector: 'edge.focus', style: { 'opacity': 1, 'width': 2.2 } },
+  ],
+  layout: { name: 'fcose', animate: false },
+});
+
+/* ---------------- state ---------------- */
+
+let rawGraph = { nodes: [], edges: [] };
+let currentFocus = null;
+
+function runLayout(animate) {
+  cy.layout({
+    name: 'fcose', quality: 'default', animate: !!animate, animationDuration: 550,
+    randomize: true, nodeSeparation: 70,
+    nodeRepulsion: n => n.data('kind') === 'host' ? 14000 : 5200,
+    idealEdgeLength: e => e.data('kind') === 'communicated_with' ? 90 : 55,
+    edgeElasticity: 0.3, nestingFactor: 0.1, gravity: 0.3, packComponents: true,
+  }).run();
+}
+
+function render() {
+  const grouped = document.getElementById('toggleGroup').checked;
+  const { nodes, edges } = buildElements(rawGraph, grouped);
+  cy.elements().remove();
+  const added = cy.add(nodes.map(n => ({ data: n.data })));
+  cy.add(edges.map(e => ({ data: e.data })));
+  cy.nodes().forEach(n => n.addClass(n.data('classKind')));
+  runLayout(true);
+  applyFilters();
+  updateCountsAndStats();
+}
+
+function updateCountsAndStats() {
+  const counts = { host: 0, 'sev-low': 0, 'sev-mid': 0, 'sev-high': 0, 'ext-none': 0, 'ext-mid': 0, 'ext-high': 0 };
+  cy.nodes().forEach(n => { const c = n.data('classKind'); if (c in counts) counts[c]++; });
+  for (const k in counts) {
+    const el = document.getElementById('cnt-' + k);
+    if (el) el.textContent = counts[k];
+  }
+  const hostN = counts.host;
+  const alertN = counts['sev-low'] + counts['sev-mid'] + counts['sev-high'];
+  const extN = counts['ext-none'] + counts['ext-mid'] + counts['ext-high'];
+  document.getElementById('stats').innerHTML =
+    `<span><b>${hostN}</b> Hosts</span><span><b>${alertN}</b> Alert-Gruppen</span><span><b>${extN}</b> ext. IPs</span><span><b>${cy.edges().length}</b> Kanten</span>`;
+}
+
+function applyFilters() {
+  const active = new Set();
+  document.querySelectorAll('.flt').forEach(cb => { if (cb.checked) active.add(cb.dataset.k); });
+  cy.nodes().forEach(n => {
+    if (active.has(n.data('classKind'))) n.show(); else n.hide();
+  });
+}
+
+function clearFocus() {
+  currentFocus = null;
+  cy.elements().removeClass('dim').removeClass('focus');
+}
+
+function focusNode(node) {
+  currentFocus = node.id();
+  const nb = node.closedNeighborhood();
+  cy.elements().addClass('dim').removeClass('focus');
+  nb.removeClass('dim').addClass('focus');
+}
+
+/* ---------------- interactions ---------------- */
+
+cy.on('mouseover', 'node', (evt) => evt.target.addClass('hover-label'));
+cy.on('mouseout', 'node', (evt) => evt.target.removeClass('hover-label'));
+
+cy.on('tap', 'node', (evt) => {
+  const node = evt.target;
+  const d = node.data();
+  if (d.kind === 'host') focusNode(node);
+  renderDetails(d, node);
+});
+
+cy.on('tap', 'edge', (evt) => renderEdgeDetails(evt.target.data()));
+
+cy.on('tap', (evt) => { if (evt.target === cy) { clearFocus(); resetDetails(); } });
+
+function resetDetails() {
+  document.getElementById('details').innerHTML =
+    '<p id="empty-hint">Klick auf einen Knoten für Details.<br>Ein Klick auf einen <span class="hint-key">Host</span> hebt seine direkte Umgebung hervor, alles andere wird gedimmt — Klick ins Leere setzt zurück.</p>';
+}
+
+function iconFor(kind) {
+  return kind === 'host' ? '🖥' : kind === 'alert' ? '◆' : '⬡';
+}
+
+function renderDetails(d, node) {
+  const details = document.getElementById('details');
+  const sub = d.kind === 'host' ? 'HOST' : d.kind === 'alert' ? `ALERT · ${severityBucket(d.severity).toUpperCase()}` : 'EXTERNE IP';
+
+  let html = `<div class="detail-head"><div class="detail-icon">${iconFor(d.kind)}</div>
+    <div><div class="detail-title">${d.label}</div><div class="detail-sub">${sub}</div></div></div>`;
+
+  if (d.kind === 'host') {
+    html += `<div class="row"><span class="k">IP</span><span class="v">${d.ip}<button class="copy-btn" onclick="navigator.clipboard.writeText('${d.ip}');showToast('IP kopiert')">copy</button></span></div>`;
+    const ports = d.open_ports || [];
+    html += `<div class="row"><span class="k">Offene Ports</span><span class="v">${ports.length ? '' : '–'}
+      <div class="chips">${ports.map(p => `<span class="chip">${p}</span>`).join('')}</div></span></div>`;
+  }
+
+  if (d.kind === 'alert') {
+    html += `<div class="row"><span class="k">Severity</span><span class="v">${d.severity ?? '–'}</span></div>`;
+    html += `<div class="row"><span class="k">Zuletzt</span><span class="v">${relTime(d.timestamp)}</span></div>`;
+    if (d.count && d.count > 1) {
+      html += `<div class="row"><span class="k">Vorkommen</span><span class="v">${d.count}×</span></div>`;
+      html += `<div class="member-list">` + (d.members || []).slice(0, 50).map(m =>
+        `<div class="member-item"><span>${relTime(m.timestamp)}</span><b>${(m.timestamp || '').replace('T', ' ').slice(0, 19)}</b></div>`
+      ).join('') + `</div>`;
+    }
+  }
+
+  if (d.kind === 'external_ip') {
+    html += `<div class="row"><span class="k">IP</span><span class="v">${d.ip || d.label}<button class="copy-btn" onclick="navigator.clipboard.writeText('${d.ip || d.label}');showToast('IP kopiert')">copy</button></span></div>`;
+    html += `<div class="row"><span class="k">OTX Pulses</span><span class="v">${d.pulse_count ?? 0}</span></div>`;
+    if (d.pulse_names && d.pulse_names.length) {
+      html += `<div class="row"><span class="k">Pulse-Namen</span><span class="v"><div class="chips">${d.pulse_names.map(p => `<span class="chip warn">${p}</span>`).join('')}</div></span></div>`;
+      html += `<div class="otx-warning">⚠ OTX-Pulses können von jedem frei benannt werden — ein reißerischer Name allein ist kein Beleg. Shared-CDN-IPs tauchen oft in Pulses auf, ohne selbst bösartig zu sein. Prüfe Pulse-Alter, Quelle und ob der Host wirklich aktiv mit dieser IP kommuniziert hat, bevor du das als Kompromittierung wertest.</div>`;
+    }
+  }
+
+  details.innerHTML = html;
+}
+
+function renderEdgeDetails(d) {
+  const details = document.getElementById('details');
+  let html = `<div class="detail-head"><div class="detail-icon">⇄</div>
+    <div><div class="detail-title">${d.kind}</div><div class="detail-sub">KANTE</div></div></div>`;
+  for (const [key, val] of Object.entries(d)) {
+    if (['id', 'source', 'target', 'kind'].includes(val)) continue;
+    if (['id', 'source', 'target', 'kind'].includes(key)) continue;
+    if (val === null || val === undefined) continue;
+    html += `<div class="row"><span class="k">${key}</span><span class="v">${Array.isArray(val) ? val.join(', ') : val}</span></div>`;
+  }
+  details.innerHTML = html;
+}
+
+/* ---------------- filter panel wiring ---------------- */
+
+document.querySelectorAll('.flt').forEach(cb => cb.addEventListener('change', applyFilters));
+document.getElementById('toggleGroup').addEventListener('change', render);
+document.getElementById('toggleLabels').addEventListener('change', (e) => {
+  cy.nodes().toggleClass('always-label', e.target.checked);
+});
+
+document.getElementById('search').addEventListener('input', (e) => {
+  const q = e.target.value.trim().toLowerCase();
+  cy.nodes().removeClass('search-match search-dim');
+  if (!q) return;
+  const matches = cy.nodes().filter(n => (n.data('label') || '').toLowerCase().includes(q) || (n.data('ip') || '').toLowerCase().includes(q));
+  if (matches.length === 0) return;
+  cy.nodes().addClass('search-dim');
+  matches.removeClass('search-dim').addClass('search-match');
+});
+
+document.getElementById('legend-toggle').addEventListener('click', () => {
+  const l = document.getElementById('legend');
+  l.classList.toggle('collapsed');
+  document.getElementById('legend-caret').textContent = l.classList.contains('collapsed') ? '▸' : '▾';
+});
+
+document.getElementById('btnFit').addEventListener('click', () => cy.fit(undefined, 40));
+document.getElementById('btnRelayout').addEventListener('click', () => runLayout(true));
+document.getElementById('btnClearFocus').addEventListener('click', () => { clearFocus(); resetDetails(); });
+document.getElementById('btnPng').addEventListener('click', () => {
+  const png = cy.png({ full: true, scale: 2, bg: '#05070b' });
+  const a = document.createElement('a');
+  a.href = png; a.download = `homenet-graph-${new Date().toISOString().slice(0,19)}.png`;
+  a.click();
+  showToast('PNG exportiert');
+});
+
+/* ---------------- data loading ---------------- */
+
+async function loadGraph() {
+  const hours = document.getElementById('hours').value;
+  const pill = document.getElementById('loading-pill');
+  pill.classList.add('active');
+  try {
+    const resp = await fetch(`${API_BASE}/graph?hours=${hours}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    rawGraph = await resp.json();
+    render();
+    showToast(`Graph aktualisiert`);
+  } catch (err) {
+    document.getElementById('stats').innerHTML = `<span style="color:#ff5a6e">Fehler: ${err.message} (läuft die API unter ${API_BASE}?)</span>`;
+  } finally {
+    pill.classList.remove('active');
+  }
+}
+
+document.getElementById('refresh').addEventListener('click', loadGraph);
+document.getElementById('hours').addEventListener('change', loadGraph);
+loadGraph();
+</script>
+
+</body>
+</html>
