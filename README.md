@@ -16,7 +16,7 @@ selbst durchgespielt, dokumentiert wie ein echtes Assessment statt wie ein Tutor
 [![Active Directory](https://img.shields.io/badge/-Active%20Directory-00A4EF?style=flat-square&logo=windows&logoColor=white)](#)
 [![Ollama](https://img.shields.io/badge/-Ollama%20%2F%20LLM-1a1a1a?style=flat-square&logoColor=white)](#)
 
-**[→ Portfolio-Seite](https://lukasloewe-cell.github.io)** · **[→ Kontakt](#-kontakt)** · 11 dokumentierte Kapitel, Stand Oktober 2026
+**[→ Portfolio-Seite](https://lukasloewe-cell.github.io)** · 11 dokumentierte Kapitel, Stand Oktober 2026
 
 </div>
 
