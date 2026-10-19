@@ -103,8 +103,6 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 09 | Blue Team: Wazuh-Detection gegen Kapitel 03 | 🔵 Blue Team | Alert Fatigue, Event-ID-Tuning, Detection Engineering | [Lesen](05-blue-team-wazuh-detection.md)¹ |
 | 10 | homenet-mapper | 🛠️ Tooling | Python, Neo4j, FastAPI, Cytoscape.js | [Lesen](https://github.com/Lukasloewe-cell/homenet-mapper)¹ |
 
-<sub>¹ Schreib mir, sobald du das Repo final strukturiert hast — bei diesen vier muss ich den
-exakten Pfad/Repo-Namen noch bestätigt bekommen (siehe Hinweis am Ende dieser Antwort).</sub>
 
 ---
 
