@@ -36,7 +36,6 @@ Richtung SOC-/Security-Analyst-Rolle in der Schweiz.
 
 ## Architektur
 
-<img src="Aufbau.png" alt="Netzwerk-Architektur" width="720">
 
 ```mermaid
 flowchart LR
@@ -350,7 +349,7 @@ Alert-Gruppierung und Fokus-Modus für dichte Teilgraphen.
 
 Am einfachsten per E-Mail oder über GitHub.
 
-**[📧 Luk007.loewe@gmail.com](mailto:Luk007.loewe@gmail.com)** · **[💻 Portfolio](https://lukasloewe-cell.github.io)** · **[🔗 GitHub](https://github.com/Lukasloewe-cell)**
+**[💻 Portfolio](https://lukasloewe-cell.github.io)** · **[🔗 GitHub](https://github.com/Lukasloewe-cell)**
 
 ---
 
