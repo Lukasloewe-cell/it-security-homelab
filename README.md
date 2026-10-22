@@ -31,7 +31,7 @@ Incident-Writeups zu Funden, die beim Durcharbeiten der eigenen Logs tatsächlic
 Jedes Kapitel unten ist bewusst so geschrieben, wie ein echtes Assessment dokumentiert würde:
 mit Sackgassen, Troubleshooting und Negativ-Ergebnissen, nicht nur den Treffern.
 
-Fachinformatiker Systemintegration (IAV GmbH), aktuell im 2nd-Level-Support, auf dem Weg in
+Fachinformatiker Systemintegration (Großkonzern), aktuell im 2nd-Level-Support, auf dem Weg in
 Richtung SOC-/Security-Analyst-Rolle in der Schweiz.
 
 ## Architektur
