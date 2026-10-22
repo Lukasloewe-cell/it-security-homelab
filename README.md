@@ -16,7 +16,7 @@ selbst durchgespielt, dokumentiert wie ein echtes Assessment statt wie ein Tutor
 [![Active Directory](https://img.shields.io/badge/-Active%20Directory-00A4EF?style=flat-square&logo=windows&logoColor=white)](#)
 [![Ollama](https://img.shields.io/badge/-Ollama%20%2F%20LLM-1a1a1a?style=flat-square&logoColor=white)](#)
 
-**[→ Portfolio-Seite](https://lukasloewe-cell.github.io)** · 11 dokumentierte Kapitel, Stand Oktober 2026
+**[→ Portfolio-Seite](https://lukasloewe-cell.github.io)** · 12 dokumentierte Kapitel, Stand Oktober 2026
 
 </div>
 
@@ -36,6 +36,7 @@ Richtung SOC-/Security-Analyst-Rolle in der Schweiz.
 
 ## Architektur
 
+<img src="Aufbau.png" alt="Netzwerk-Architektur" width="720">
 
 ```mermaid
 flowchart LR
@@ -102,7 +103,10 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 08 | Incident: der „Mia"-Backdoor-Fund | 🔵 Blue Team | Root-Cause-Analyse, FIM, CIS-Benchmark | [Lesen](incident-mia-backdoor.md) |
 | 09 | Blue Team: Wazuh-Detection gegen Kapitel 03 | 🔵 Blue Team | Alert Fatigue, Event-ID-Tuning, Detection Engineering | [Lesen](05-blue-team-wazuh-detection.md)¹ |
 | 10 | homenet-mapper | 🛠️ Tooling | Python, Neo4j, FastAPI, Cytoscape.js | [Lesen](https://github.com/Lukasloewe-cell/homenet-mapper)¹ |
+| 11 | VirusTotal-Integration & Active-Response-Quarantäne | 🔵 Blue Team | FIM, Active Response, Rule-Chaining, Forensisches Logging | [Lesen](11-virustotal-active-response-quarantine.md) |
 
+<sub>¹ Schreib mir, sobald du das Repo final strukturiert hast — bei diesen vier muss ich den
+exakten Pfad/Repo-Namen noch bestätigt bekommen (siehe Hinweis am Ende dieser Antwort).</sub>
 
 ---
 
@@ -307,6 +311,28 @@ NTDS.dit-Angriff aus Kapitel 03).
 **Kerntechniken:** Alert-Fatigue-Reduktion · Event-ID-Tuning · Windows-Audit-Policy · Detection Engineering
 
 [→ Vollständiger Writeup](05-blue-team-wazuh-detection.md)
+</details>
+
+<details>
+<summary><b>VirusTotal-Integration & Active-Response-Quarantäne</b></summary>
+<br>
+
+Eine FIM/Automated-Response-Pipeline, die in echt greift: `syscheck` erkennt eine neue Datei,
+die VirusTotal-Integration prüft deren Hash, ein positiver Fund wird über eine eigene,
+auf `87105` gechainte Regel (`100200`) erst FIM-sichtbar und zuordenbar für eine Active
+Response gemacht. Zwei echte Bugs beim Live-Test aufgedeckt statt nur behauptet: Ein
+`jq`-Filter mit Leerzeichen in den Pfad-Segmenten lieferte einen leeren Dateinamen, wodurch
+`rm -f ""` lautlos Exit-Code 0 zurückgab — das Skript meldete "Successfully removed threat",
+ohne dass je etwas gelöscht wurde, ein klassischer stiller Automatisierungs-Fehler mit
+False-Confidence-Risiko. Danach vollständig auf Quarantäne statt hartem Löschen umgebaut:
+Datei wird nach `/var/ossec/quarantine/` verschoben, Rechte auf `000`/`root:root` gesetzt,
+Original-Pfad, Hashes und VT-Score in einem eigenen Forensik-Log mitgeschrieben — live
+gegen eine EICAR-Testdatei verifiziert.
+
+**Kerntechniken:** VirusTotal-Integration · File Integrity Monitoring · Active Response ·
+Rule-Chaining · Bash-Fehleranalyse · Forensisches Logging
+
+[→ Vollständiger Writeup](11-virustotal-active-response-quarantine.md)
 </details>
 
 ---
