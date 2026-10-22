@@ -36,8 +36,6 @@ Richtung SOC-/Security-Analyst-Rolle in der Schweiz.
 
 ## Architektur
 
-<img src="Aufbau.png" alt="Netzwerk-Architektur" width="720">
-
 ```mermaid
 flowchart LR
     subgraph HEIM["🏠 Heimnetz — 192.168.178.0/24"]
