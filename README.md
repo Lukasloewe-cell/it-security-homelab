@@ -97,7 +97,7 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 04 | EDR/SIEM-Test: Lateral Movement | 🔴 Offense | Metasploit, SMB, Negativ-Ergebnis | [Lesen](06-edr-evasion-test-metasploit.md)¹ |
 | 05 | Elster IT-Service — Perimeter-Firewall-Workshop | 🧪 Eigenes Lab | SQLi, IDOR, XSS, SSTI, Cookie-Forgery | [Lesen](workshop-perimeter-firewall-elster-portal.md) |
 | 06 | NEXORA Cloud Intelligence | 🧪 Eigenes Lab | Secret Leak, Path Traversal, SSRF, Broken Access Control | [Lesen](NEXORA_WRITEUP.md) |
-| 07 | ECHO Support Agent | 🧪 Eigenes Lab | Prompt Injection (direkt/indirekt), Excessive Agency | [Lesen](07-echo-agent-prompt-injection.md)¹ |
+| 07 | ECHO Support Agent | 🧪 Eigenes Lab | Prompt Injection (direkt/indirekt), Excessive Agency | [Lesen](07-echo-agent-prompt-injection.md) |
 | 08 | Incident: der „Mia"-Backdoor-Fund | 🔵 Blue Team | Root-Cause-Analyse, FIM, CIS-Benchmark | [Lesen](incident-mia-backdoor.md) |
 | 09 | Blue Team: Wazuh-Detection gegen Kapitel 03 | 🔵 Blue Team | Alert Fatigue, Event-ID-Tuning, Detection Engineering | [Lesen](05-blue-team-wazuh-detection.md)¹ |
 | 10 | homenet-mapper | 🛠️ Tooling | Python, Neo4j, FastAPI, Cytoscape.js | [Lesen](https://github.com/Lukasloewe-cell/homenet-mapper)¹ |
