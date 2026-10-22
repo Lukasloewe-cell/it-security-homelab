@@ -103,9 +103,6 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 10 | homenet-mapper | 🛠️ Tooling | Python, Neo4j, FastAPI, Cytoscape.js | [Lesen](https://github.com/Lukasloewe-cell/homenet-mapper)¹ |
 | 11 | VirusTotal-Integration & Active-Response-Quarantäne | 🔵 Blue Team | FIM, Active Response, Rule-Chaining, Forensisches Logging | [Lesen](11-virustotal-active-response-quarantine.md) |
 
-<sub>¹ Schreib mir, sobald du das Repo final strukturiert hast — bei diesen vier muss ich den
-exakten Pfad/Repo-Namen noch bestätigt bekommen (siehe Hinweis am Ende dieser Antwort).</sub>
-
 ---
 
 ## 🔴 Offense
