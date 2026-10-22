@@ -1,0 +1,62 @@
+#!/bin/bash
+
+LOCAL=$(dirname "$0")
+cd "$LOCAL" || exit 1
+cd .. || exit 1
+WORKDIR=$(pwd)
+
+LOG_FILE="${WORKDIR}/../logs/active-responses.log"
+QUARANTINE_DIR="/var/ossec/quarantine"
+FORENSICS_LOG="${WORKDIR}/../logs/quarantine-forensics.log"
+
+read -r INPUT_JSON
+
+FILENAME=$(echo "$INPUT_JSON" | jq -r '.parameters.alert.data.virustotal.source.file')
+COMMAND=$(echo "$INPUT_JSON" | jq -r '.command')
+MD5=$(echo "$INPUT_JSON" | jq -r '.parameters.alert.data.virustotal.source.md5 // "unknown"')
+SHA1=$(echo "$INPUT_JSON" | jq -r '.parameters.alert.data.virustotal.source.sha1 // "unknown"')
+POSITIVES=$(echo "$INPUT_JSON" | jq -r '.parameters.alert.data.virustotal.positives // "unknown"')
+TOTAL=$(echo "$INPUT_JSON" | jq -r '.parameters.alert.data.virustotal.total // "unknown"')
+
+if [ "$COMMAND" = "add" ]; then
+    printf '{"version":1,"origin":{"name":"remove-threat","module":"active-response"},"command":"check_keys","parameters":{"keys":[]}}\n'
+
+    read -r RESPONSE
+    COMMAND2=$(echo "$RESPONSE" | jq -r '.command')
+
+    if [ "$COMMAND2" != "continue" ]; then
+        echo "$(date '+%Y/%m/%d %H:%M:%S') $0: $INPUT_JSON Remove threat active response aborted" >> "$LOG_FILE"
+        exit 0
+    fi
+fi
+
+if [ -z "$FILENAME" ] || [ "$FILENAME" = "null" ]; then
+    echo "$(date '+%Y/%m/%d %H:%M:%S') $0: $INPUT_JSON Error: empty filename from alert" >> "$LOG_FILE"
+    exit 1
+fi
+
+if [ ! -f "$FILENAME" ]; then
+    echo "$(date '+%Y/%m/%d %H:%M:%S') $0: $INPUT_JSON Error: file not found, already gone?" >> "$LOG_FILE"
+    exit 1
+fi
+
+TS=$(date '+%Y%m%d-%H%M%S')
+BASENAME=$(basename "$FILENAME")
+QUARANTINE_PATH="${QUARANTINE_DIR}/${TS}_${BASENAME}"
+
+mkdir -p "$QUARANTINE_DIR"
+
+mv -f -- "$FILENAME" "$QUARANTINE_PATH"
+MV_STATUS=$?
+
+if [ $MV_STATUS -eq 0 ]; then
+    chmod 000 "$QUARANTINE_PATH"
+    chown root:root "$QUARANTINE_PATH"
+
+    echo "$(date '+%Y/%m/%d %H:%M:%S') $0: $INPUT_JSON Successfully quarantined threat" >> "$LOG_FILE"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') | original=$FILENAME | quarantine=$QUARANTINE_PATH | md5=$MD5 | sha1=$SHA1 | vt_positives=${POSITIVES}/${TOTAL}" >> "$FORENSICS_LOG"
+else
+    echo "$(date '+%Y/%m/%d %H:%M:%S') $0: $INPUT_JSON Error quarantining threat" >> "$LOG_FILE"
+fi
+
+exit 0
