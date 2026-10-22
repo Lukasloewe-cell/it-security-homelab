@@ -334,7 +334,7 @@ Alert-Gruppierung und Fokus-Modus für dichte Teilgraphen.
 
 | Ziel | Über | Status |
 |---|---|---|
-| Systemintegration | Fachinformatiker-Ausbildung, IAV GmbH (IHK-Note: 2) | ✅ abgeschlossen |
+| Systemintegration | Fachinformatiker-Ausbildung (IHK-Note: 2) | ✅ abgeschlossen |
 | Netzwerk- & Firewall-Praxis | Eigenes Homelab — Proxmox, OPNsense, Wazuh | 🟢 aktiv |
 | Vulnerability Chaining | Elster-Portal, NEXORA, ECHO (selbst entworfene Ketten) | 🟢 aktiv |
 | Active Directory | Eigener Domain Controller im Homelab | 🟢 aktiv |
