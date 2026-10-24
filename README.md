@@ -97,8 +97,8 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 02 | XSS & Session Hijacking | 🔴 Offense | Stored XSS, Cookie-Exfiltration, Session Hijacking | [Lesen](03-xss-session-hijacking.md) |
 | 03 | Active Directory Attacks | 🔴 Offense | Kerberoasting, BloodHound, NTDS.dit-Extraktion | [Lesen](04-active-directory-attacks.md) |
 | 04 | EDR/SIEM-Test: Lateral Movement | 🔴 Offense | Metasploit, SMB, Negativ-Ergebnis | [Lesen](06-edr-evasion-test-metasploit.md)¹ |
-| 05 | Elster IT-Service — Perimeter-Firewall-Workshop | 🧪 Eigenes Lab | SQLi, IDOR, XSS, SSTI, Cookie-Forgery | [Lesen](workshop-perimeter-firewall-elster-portal.md) |
-| 06 | NEXORA Cloud Intelligence | 🧪 Eigenes Lab | Secret Leak, Path Traversal, SSRF, Broken Access Control | [Lesen](NEXORA_WRITEUP.md) |
+| 05 | Elster IT-Service — Perimeter-Firewall-Workshop | 🧪 Eigenes Lab | SQLi, IDOR, XSS, SSTI, Cookie-Forgery | [Lesen](05-workshop-perimeter-firewall-elster-portal.md) |
+| 06 | NEXORA Cloud Intelligence | 🧪 Eigenes Lab | Secret Leak, Path Traversal, SSRF, Broken Access Control | [Lesen](06-NEXORA_WRITEUP.md) |
 | 07 | ECHO Support Agent | 🧪 Eigenes Lab | Prompt Injection (direkt/indirekt), Excessive Agency | [Lesen](07-echo-agent-prompt-injection.md) |
 | 08 | Incident: der „Mia"-Backdoor-Fund | 🔵 Blue Team | Root-Cause-Analyse, FIM, CIS-Benchmark | [Lesen](08-incident-mia-backdoor.md) |
 | 09 | Blue Team: Wazuh-Detection gegen Kapitel 03 | 🔵 Blue Team | Alert Fatigue, Event-ID-Tuning, Detection Engineering | [Lesen](05-blue-team-wazuh-detection.md)¹ |
