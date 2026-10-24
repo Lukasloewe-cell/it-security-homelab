@@ -29,7 +29,9 @@ eigene Netzsegmentierung, eigene Firewall-Regeln, teils selbst **entworfene** ve
 Anwendungen (nicht nur fertige CTF-Boxen durchgespielt), eigene Detection-Regeln und eigene
 Incident-Writeups zu Funden, die beim Durcharbeiten der eigenen Logs tatsächlich aufgetaucht sind.
 Jedes Kapitel unten ist bewusst so geschrieben, wie ein echtes Assessment dokumentiert würde:
-mit Sackgassen, Troubleshooting und Negativ-Ergebnissen, nicht nur den Treffern.
+mit Sackgassen, Troubleshooting und Negativ-Ergebnissen, nicht nur den Treffern. 
+
+Das Repo wird laufend erweitert; Struktur und Nummerierung sind noch nicht final.
 
 Fachinformatiker Systemintegration (Großkonzern), aktuell im 2nd-Level-Support, auf dem Weg in
 Richtung SOC-/Security-Analyst-Rolle in der Schweiz.
