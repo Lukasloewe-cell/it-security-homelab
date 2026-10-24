@@ -104,7 +104,7 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 09 | Blue Team: Wazuh-Detection gegen Kapitel 03 | 🔵 Blue Team | Alert Fatigue, Event-ID-Tuning, Detection Engineering | [Lesen](05-blue-team-wazuh-detection.md)¹ |
 | 10 | homenet-mapper | 🛠️ Tooling | Python, Neo4j, FastAPI, Cytoscape.js | [Lesen](https://github.com/Lukasloewe-cell/homenet-mapper)¹ |
 | 11 | VirusTotal-Integration & Active-Response-Quarantäne | 🔵 Blue Team | FIM, Active Response, Rule-Chaining, Forensisches Logging | [Lesen](11-virustotal-active-response-quarantine.md) |
-| 12 | Portscan-Detection-Umgehung & ARP-Spoofing (MITM) | 🔴 Offense | Rate-Limiting/Overload-Tables, Reconnaissance-Evasion, ARP-Spoofing, Layer-2-Blind-Spot | [Lesen](workshop-portscan-detection-arp-spoofing.md) |
+| 12 | Portscan-Detection-Umgehung & ARP-Spoofing (MITM) | 🔴 Offense | Rate-Limiting/Overload-Tables, Reconnaissance-Evasion, ARP-Spoofing, Layer-2-Blind-Spot | [Lesen](12-workshop-portscan-detection-arp-spoofing.md) |
 
 ---
 
@@ -226,7 +226,7 @@ OPNsense Rate-Limit-Regel gegen Portscans (Overload-Table) → verifiziert via L
 
 **Kerntechniken:** pf Rate-Limiting/Overload-Tables · Reconnaissance-Evasion-Theorie · ARP-Spoofing/MITM · IP-Forwarding · Layer-2-vs.-Layer-3-Blind-Spot
 
-[→ Vollständiger Writeup](workshop-portscan-detection-arp-spoofing.md)
+[→ Vollständiger Writeup](12-workshop-portscan-detection-arp-spoofing.md)
 </details>
 
 ---
