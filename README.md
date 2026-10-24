@@ -100,7 +100,7 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 05 | Elster IT-Service — Perimeter-Firewall-Workshop | 🧪 Eigenes Lab | SQLi, IDOR, XSS, SSTI, Cookie-Forgery | [Lesen](workshop-perimeter-firewall-elster-portal.md) |
 | 06 | NEXORA Cloud Intelligence | 🧪 Eigenes Lab | Secret Leak, Path Traversal, SSRF, Broken Access Control | [Lesen](NEXORA_WRITEUP.md) |
 | 07 | ECHO Support Agent | 🧪 Eigenes Lab | Prompt Injection (direkt/indirekt), Excessive Agency | [Lesen](07-echo-agent-prompt-injection.md) |
-| 08 | Incident: der „Mia"-Backdoor-Fund | 🔵 Blue Team | Root-Cause-Analyse, FIM, CIS-Benchmark | [Lesen](incident-mia-backdoor.md) |
+| 08 | Incident: der „Mia"-Backdoor-Fund | 🔵 Blue Team | Root-Cause-Analyse, FIM, CIS-Benchmark | [Lesen](08-incident-mia-backdoor.md) |
 | 09 | Blue Team: Wazuh-Detection gegen Kapitel 03 | 🔵 Blue Team | Alert Fatigue, Event-ID-Tuning, Detection Engineering | [Lesen](05-blue-team-wazuh-detection.md)¹ |
 | 10 | homenet-mapper | 🛠️ Tooling | Python, Neo4j, FastAPI, Cytoscape.js | [Lesen](https://github.com/Lukasloewe-cell/homenet-mapper)¹ |
 | 11 | VirusTotal-Integration & Active-Response-Quarantäne | 🔵 Blue Team | FIM, Active Response, Rule-Chaining, Forensisches Logging | [Lesen](11-virustotal-active-response-quarantine.md) |
