@@ -93,4 +93,4 @@
 
 ## Anhang
 - Vollständiger Rohlog-Auszug: siehe Abschnitt 5
-- Vergleichsfall (False Positive, Portscan): separat dokumentiert, Rule-ID 11 / Decoder `pf`, `data.length: 0`, TCP-Flag `S` (SYN only)
+- Vergleichsfall (False Positive, Portscan): `14-incident-report-portscan-false-positive.md`
