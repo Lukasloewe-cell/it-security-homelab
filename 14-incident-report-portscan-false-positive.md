@@ -60,4 +60,4 @@ Oct 26 17:42:25 OPNsense.internal filterlog[82551]: 74,,,0684d022-6a61-4693-b36f
 
 ## Anhang
 - Vollständiger Rohlog-Auszug: siehe Abschnitt 5
-- Vergleichsfall (True Positive, SSH-Brute-Force via Hydra): `incident-report-ssh-bruteforce.md`
+- Vergleichsfall (True Positive, SSH-Brute-Force via Hydra): `13-incident-report-ssh-bruteforce.md`
