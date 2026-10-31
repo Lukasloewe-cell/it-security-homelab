@@ -1,0 +1,44 @@
+#Requires -RunAsAdministrator
+
+Write-Host "=== Detection Test 2 wird ausgefuehrt ===" -ForegroundColor Yellow
+
+# --- Aktion 1 ---
+$encodedCmd = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes('Write-Output "marker-$(Get-Date -Format o)" | Out-File "$env:TEMP\exec-marker.txt"'))
+Start-Process powershell.exe -ArgumentList "-NoProfile -EncodedCommand $encodedCmd" -Wait -WindowStyle Hidden
+Write-Host "[1] done"
+
+# --- Aktion 2 ---
+if (-not (Get-LocalUser -Name "svc_update" -ErrorAction SilentlyContinue)) {
+    $pw = ConvertTo-SecureString "Temp!2026Lab" -AsPlainText -Force
+    New-LocalUser -Name "svc_update" -Password $pw -FullName "Service Update Helper" -Description "Scheduled maintenance account" | Out-Null
+}
+Add-LocalGroupMember -Group "Administrators" -Member "svc_update" -ErrorAction SilentlyContinue
+Write-Host "[2] done"
+
+# --- Aktion 3 ---
+New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -Value 0 -PropertyType DWord -Force | Out-Null
+Write-Host "[3] done"
+
+# --- Aktion 4 ---
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-WindowStyle Hidden -Command exit"
+$trigger = New-ScheduledTaskTrigger -AtLogOn
+Register-ScheduledTask -TaskName "WindowsUpdateHelper" -Action $action -Trigger $trigger -RunLevel Highest -Force | Out-Null
+Write-Host "[4] done"
+
+# --- Aktion 5 ---
+wevtutil cl "Windows PowerShell"
+Write-Host "[5] done"
+
+# --- Aktion 6 ---
+New-Item -Path "$env:USERPROFILE\Downloads\Rechnung_Oktober.pdf.exe" -ItemType File -Force | Out-Null
+Set-Content -Path "$env:USERPROFILE\Downloads\Rechnung_Oktober.pdf.exe" -Value "harmless placeholder, not executable content"
+Write-Host "[6] done"
+
+# --- Aktion 7 ---
+$outFile = "$env:TEMP\sysinfo_recon.txt"
+Get-Process | Select-Object Name, Id | Out-File $outFile
+Get-CimInstance -ClassName Win32_Product -ErrorAction SilentlyContinue | Select-Object Name | Out-File $outFile -Append
+Get-MpComputerStatus | Select-Object AMServiceEnabled, RealTimeProtectionEnabled | Out-File $outFile -Append
+Write-Host "[7] done"
+
+Write-Host "=== Fertig. 7 Aktionen ausgefuehrt. ===" -ForegroundColor Green
