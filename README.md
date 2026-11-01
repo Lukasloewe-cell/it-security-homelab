@@ -93,7 +93,7 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 
 | # | Kapitel | Kategorie | Kerntechniken | Writeup |
 |---|---|---|---|---|
-| 01 | Web-Exploitation & Privilege Escalation | 🔴 Offense | SQLi, Command Injection, GTFOBins, UID-0-Persistence | [Lesen](01-web-exploitation%and%privilege%escalation.md) |
+| 01 | Web-Exploitation & Privilege Escalation | 🔴 Offense | SQLi, Command Injection, GTFOBins, UID-0-Persistence | [Lesen](01-web-exploitation-and-privilege-escalation.md) |
 | 02 | XSS & Session Hijacking | 🔴 Offense | Stored XSS, Cookie-Exfiltration, Session Hijacking | [Lesen](03-xss-session-hijacking.md) |
 | 03 | Active Directory Attacks | 🔴 Offense | Kerberoasting, BloodHound, NTDS.dit-Extraktion | [Lesen](04-active-directory-attacks.md) |
 | 04 | EDR/SIEM-Test: Lateral Movement | 🔴 Offense | Metasploit, SMB, Negativ-Ergebnis | [Lesen](06-edr-evasion-test-metasploit.md)¹ |
