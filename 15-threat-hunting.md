@@ -1,4 +1,4 @@
-# Chapter 15: Threat Hunting — Hypothesis-Driven Investigation
+# Kapitel 15: Threat Hunting — Hypothesis-Driven Investigation
 
 ## 1. Was ist Threat Hunting?
 
