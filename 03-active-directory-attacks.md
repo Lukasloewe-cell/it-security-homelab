@@ -1,4 +1,4 @@
-# Kapitel 4: Active Directory Attacks
+# Kapitel 3: Active Directory Attacks
 
 Ausgangspunkt dieses Kapitels war die Frage, wie ein Angreifer vorgeht, der sich bereits im internen Netzwerk befindet, aber noch keine Domain-Credentials besitzt. Der Windows Server 2022 wurde zuvor als Domain Controller (`dc01.lab.local`) für die Domäne `lab.local` aufgesetzt, inklusive mehrerer Testuser und eines Service-Accounts (`svc.backup`) mit absichtlich schwacher Konfiguration.
 
