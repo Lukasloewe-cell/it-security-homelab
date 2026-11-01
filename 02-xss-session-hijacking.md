@@ -1,4 +1,4 @@
-# Kapitel 3: XSS & Session Hijacking
+# Kapitel 2: XSS & Session Hijacking
 
 Ausgangspunkt dieses Kapitels war ein konkreter Fund aus dem automatisierten Nikto-Scan gegen DVWA (Port 8080): Der Session-Cookie `PHPSESSID` wird ohne das `HttpOnly`-Flag gesetzt. Dieses Detail verrät bereits vor dem eigentlichen Angriff, dass Session Hijacking über JavaScript möglich sein könnte.
 
