@@ -108,6 +108,7 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 13 | SOC-Investigation: SSH-Brute-Force (True Positive) | 🔵 Blue Team | OPNsense-Wazuh-Syslog-Pipeline, MITRE ATT&CK, Evidence-based Disposition | [Lesen](13-incident-report-ssh-bruteforce.md) |
 | 14 | SOC-Investigation: Portscan fälschlich als Brute Force (False Positive) | 🔵 Blue Team | False-Positive-Analyse, Heuristik-Grenzen, Raw-Log-Korrelation | [Lesen](14-incident-report-portscan-false-positive.md) |
 | 15 | Threat Hunting — Hypothesis-Driven Investigation | 🔵 Blue Team | Threat Hunting Loop, Scoping & Timeboxing, MITRE-ATT&CK-Mapping, Visibility-Gap-Analyse | [Lesen](15-threat-hunting.md) |
+| 16 | Inter-VLAN-Routing, DHCP & ACL (Packet Tracer) | 🌐 Netzwerk | VLAN, Trunking, Router-on-a-Stick, DHCP, Extended ACL | [Lesen](16-inter-vlan-routing-dhcp-acl.md) |
 
 ---
 
@@ -436,6 +437,23 @@ eigentliche Ausführung eines obfuskierten PowerShell-Befehls blieb unsichtbar u
 **Kerntechniken:** Threat Hunting Loop · Scoping & Timeboxing · MITRE-ATT&CK-Mapping · Visibility-Gap-Analyse · Wazuh-Log-Source-Debugging
 
 [→ Vollständiger Writeup](15-threat-hunting.md)
+</details>
+
+## 🌐 Netzwerk-Grundlagen
+
+<details open>
+<summary><b>Inter-VLAN-Routing, DHCP & Extended ACL (Cisco Packet Tracer)</b></summary>
+<br>
+
+Eigenständiges Netzwerk-Lab, getrennt vom Proxmox-Homelab: VLAN-Segmentierung mit Router-on-a-Stick,
+DHCP-Pools pro VLAN und eine gerichtete Extended-ACL (Ping von VLAN 10 nach VLAN 20 blockiert,
+Gegenrichtung erlaubt). Zwei echte Debugging-Momente dokumentiert: eine vertauschte Gateway-IP
+auf dem Router-Subinterface, und ein ACL-Fehler, bei dem eine pauschale `deny icmp`-Regel versehentlich
+auch die erlaubte Antwort-Richtung blockierte (ICMP Echo-Request vs. Echo-Reply).
+
+**Kerntechniken:** VLAN & Trunking · Router-on-a-Stick · DHCP · Extended ACL · ICMP-Nachrichtentypen
+
+[→ Vollständiger Writeup](16-inter-vlan-routing-dhcp-acl.md)
 </details>
 
 ---
