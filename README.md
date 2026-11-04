@@ -109,6 +109,7 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 14 | SOC-Investigation: Portscan fälschlich als Brute Force (False Positive) | 🔵 Blue Team | False-Positive-Analyse, Heuristik-Grenzen, Raw-Log-Korrelation | [Lesen](14-incident-report-portscan-false-positive.md) |
 | 15 | Threat Hunting — Hypothesis-Driven Investigation | 🔵 Blue Team | Threat Hunting Loop, Scoping & Timeboxing, MITRE-ATT&CK-Mapping, Visibility-Gap-Analyse | [Lesen](15-threat-hunting.md) |
 | 16 | Inter-VLAN-Routing, DHCP & ACL (Packet Tracer) | 🌐 Netzwerk | VLAN, Trunking, Router-on-a-Stick, DHCP, Extended ACL | [Lesen](16-inter-vlan-routing-dhcp-acl.md) |
+| 17 | Netzwerk-Störungen: Broadcast Storm & doppelte IP (Packet Tracer) | 🌐 Netzwerk | Spanning Tree, Broadcast Storm, Gratuitous ARP/ARP Probe, Incident-Diagnose | [Lesen](17-netzwerkstoerungen-storm-duplicate-ip.md) |
 
 ---
 
@@ -454,6 +455,20 @@ auch die erlaubte Antwort-Richtung blockierte (ICMP Echo-Request vs. Echo-Reply)
 **Kerntechniken:** VLAN & Trunking · Router-on-a-Stick · DHCP · Extended ACL · ICMP-Nachrichtentypen
 
 [→ Vollständiger Writeup](16-inter-vlan-routing-dhcp-acl.md)
+</details>
+
+<details>
+<summary><b>Netzwerk-Störungen: Broadcast Storm & doppelte IP-Adresse</b></summary>
+<br>
+
+Zwei betriebstypische Störungsbilder statt Konfigurationsfehlern beim Aufbau: Spanning Tree
+deaktiviert → Broadcast Storm (nachgewiesen über Switch-Queue-Overflow bei trivialem Traffic),
+und eine doppelt vergebene statische IP, erkannt über Gratuitous ARP/ARP Probe (RFC 5227) noch
+bevor die Adresse genutzt wird. Beide Vorfälle diagnostiziert und behoben wie im echten Betrieb.
+
+**Kerntechniken:** Spanning Tree Protocol · Broadcast-Storm-Diagnose · Gratuitous ARP/ARP Probe · Incident-Troubleshooting
+
+[→ Vollständiger Writeup](17-netzwerkstoerungen-storm-duplicate-ip.md)
 </details>
 
 ---
