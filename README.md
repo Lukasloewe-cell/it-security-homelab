@@ -111,6 +111,7 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 16 | Inter-VLAN-Routing, DHCP & ACL (Packet Tracer) | 🌐 Netzwerk | VLAN, Trunking, Router-on-a-Stick, DHCP, Extended ACL | [Lesen](16-inter-vlan-routing-dhcp-acl.md) |
 | 17 | Netzwerk-Störungen: Broadcast Storm & doppelte IP (Packet Tracer) | 🌐 Netzwerk | Spanning Tree, Broadcast Storm, Gratuitous ARP/ARP Probe, Incident-Diagnose | [Lesen](17-netzwerkstoerungen-storm-duplicate-ip.md) |
 | 18 | Static Routing, OSPF & NAT/PAT zwischen zwei Routern (Packet Tracer) | 🌐 Netzwerk | Static Routing, OSPF, Wildcard-Masken, Administrative Distance/Metric, Area-Konzept, NAT/PAT | [Lesen](18-static-routing-ospf.md) |
+| 19 | 802.1X mit RADIUS — Negativ-Ergebnis (Cisco Packet Tracer) | 🌐 Netzwerk | AAA, 802.1X, RADIUS, EAP-MD5, Systematisches Debugging | [Lesen](19-dot1x-radius-negativergebnis.md) |
 
 ---
 
@@ -485,6 +486,22 @@ Zusätzlich NAT/PAT mit Router1 als simulierter Außenwelt, inkl. einem Doppel-N
 **Kerntechniken:** Static Routing · OSPF · Wildcard-Masken · Administrative Distance/Metric · Area-Konzept · NAT/PAT (Overload)
 
 [→ Vollständiger Writeup](18-static-routing-ospf.md)
+</details>
+
+<details>
+<summary><b>802.1X mit RADIUS — Negativ-Ergebnis (Cisco Packet Tracer)</b></summary>
+<br>
+
+Vollständiger AAA-/802.1X-Aufbau mit Switch (Authenticator), PC (Supplicant, EAP-MD5) und
+externem RADIUS-Server — jede Konfigurationsebene (IP-Erreichbarkeit, Port, Client-IP, Secret,
+Credentials, Running-Config) systematisch geprüft und als korrekt bestätigt, Authentifizierung
+lief trotzdem nicht durch. Bewusst als Negativ-Ergebnis dokumentiert: eine unabhängige Recherche
+bestätigt dasselbe ungelöste Verhalten in der Cisco-Community mit identischem Setup — eine
+Packet-Tracer-Simulationsgrenze, kein eigener Konfigurationsfehler.
+
+**Kerntechniken:** AAA (Authentication/Authorization/Accounting) · 802.1X · RADIUS · EAP-MD5 · Systematisches Debugging
+
+[→ Vollständiger Writeup](19-dot1x-radius-negativergebnis.md)
 </details>
 
 ---
