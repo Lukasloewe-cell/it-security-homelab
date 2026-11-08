@@ -110,7 +110,7 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 15 | Threat Hunting — Hypothesis-Driven Investigation | 🔵 Blue Team | Threat Hunting Loop, Scoping & Timeboxing, MITRE-ATT&CK-Mapping, Visibility-Gap-Analyse | [Lesen](15-threat-hunting.md) |
 | 16 | Inter-VLAN-Routing, DHCP & ACL (Packet Tracer) | 🌐 Netzwerk | VLAN, Trunking, Router-on-a-Stick, DHCP, Extended ACL | [Lesen](16-inter-vlan-routing-dhcp-acl.md) |
 | 17 | Netzwerk-Störungen: Broadcast Storm & doppelte IP (Packet Tracer) | 🌐 Netzwerk | Spanning Tree, Broadcast Storm, Gratuitous ARP/ARP Probe, Incident-Diagnose | [Lesen](17-netzwerkstoerungen-storm-duplicate-ip.md) |
-| 18 | Static Routing & OSPF zwischen zwei Routern (Cisco Packet Tracer) | 🌐 Netzwerk | Static Routing, OSPF, Wildcard-Masken, Administrative Distance/Metric, Area-Konzept | [Lesen](18-static-routing-ospf.md) |
+| 18 | Static Routing, OSPF & NAT/PAT zwischen zwei Routern (Cisco Packet Tracer) | 🌐 Netzwerk | Static Routing, OSPF, Wildcard-Masken, Administrative Distance/Metric, Area-Konzept, NAT/PAT | [Lesen](18-static-routing-ospf.md) |
 
 ---
 
@@ -473,14 +473,16 @@ bevor die Adresse genutzt wird. Beide Vorfälle diagnostiziert und behoben wie i
 </details>
 
 <details>
-<summary><b>Static Routing & OSPF (Cisco Packet Tracer)</b></summary>
+<summary><b>Static Routing, OSPF & NAT/PAT (Cisco Packet Tracer)</b></summary>
 <br>
 
 Zwei Router, zwei Netze, kein gemeinsamer Switch. Static Routing und OSPF im direkten Vergleich,
 inkl. drei echter Debugging-Momente: fehlendes Default-Gateway auf dem Client, falsches Netz in
 der ersten OSPF-`network`-Zeile, und ein verifizierter Area-Mismatch zwischen den Routern.
+Zusätzlich NAT/PAT mit Router1 als simulierter Außenwelt, inkl. einem Doppel-NAT-Debugging-Moment
+(PAT versehentlich auf beiden Routern gleichzeitig eingerichtet).
 
-**Kerntechniken:** Static Routing · OSPF · Wildcard-Masken · Administrative Distance/Metric · Area-Konzept
+**Kerntechniken:** Static Routing · OSPF · Wildcard-Masken · Administrative Distance/Metric · Area-Konzept · NAT/PAT (Overload)
 
 [→ Vollständiger Writeup](18-static-routing-ospf.md)
 </details>
