@@ -110,7 +110,7 @@ filterbar, protokollierbar und für Suricata/Wazuh sichtbar.
 | 15 | Threat Hunting — Hypothesis-Driven Investigation | 🔵 Blue Team | Threat Hunting Loop, Scoping & Timeboxing, MITRE-ATT&CK-Mapping, Visibility-Gap-Analyse | [Lesen](15-threat-hunting.md) |
 | 16 | Inter-VLAN-Routing, DHCP & ACL (Packet Tracer) | 🌐 Netzwerk | VLAN, Trunking, Router-on-a-Stick, DHCP, Extended ACL | [Lesen](16-inter-vlan-routing-dhcp-acl.md) |
 | 17 | Netzwerk-Störungen: Broadcast Storm & doppelte IP (Packet Tracer) | 🌐 Netzwerk | Spanning Tree, Broadcast Storm, Gratuitous ARP/ARP Probe, Incident-Diagnose | [Lesen](17-netzwerkstoerungen-storm-duplicate-ip.md) |
-| 18 | Static Routing, OSPF & NAT/PAT zwischen zwei Routern (Cisco Packet Tracer) | 🌐 Netzwerk | Static Routing, OSPF, Wildcard-Masken, Administrative Distance/Metric, Area-Konzept, NAT/PAT | [Lesen](18-static-routing-ospf.md) |
+| 18 | Static Routing, OSPF & NAT/PAT zwischen zwei Routern (Packet Tracer) | 🌐 Netzwerk | Static Routing, OSPF, Wildcard-Masken, Administrative Distance/Metric, Area-Konzept, NAT/PAT | [Lesen](18-static-routing-ospf.md) |
 
 ---
 
