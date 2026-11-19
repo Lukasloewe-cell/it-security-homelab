@@ -33,8 +33,7 @@ mit Sackgassen, Troubleshooting und Negativ-Ergebnissen, nicht nur den Treffern.
 
 Das Repo wird laufend erweitert; Struktur und Nummerierung sind noch nicht final.
 
-Fachinformatiker Systemintegration (Großkonzern), aktuell im 2nd-Level-Support, auf dem Weg in
-Richtung SOC-/Security-Analyst-Rolle in der Schweiz.
+Fachinformatiker Systemintegration (Großkonzern), aktuell im 2nd-Level-Support, mit wachsendem Fokus auf Netzwerk- und IT-Sicherheit.
 
 ## Architektur
 
